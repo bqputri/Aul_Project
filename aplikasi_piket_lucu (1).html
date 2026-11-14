@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Piket Ceria & Lucu 🧹✨</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        pastelGreen: '#a8e6cf',
+                        pastelYellow: '#dcedc1',
+                        pastelPink: '#ffaaa5',
+                        pastelBlue: '#d4f0fc',
+                        pastelPurple: '#dfd3c3',
+                        cuteCream: '#fdfbf7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 35%, #ffd3b6 70%, #ffaaa5 100%);
+            background-attachment: fixed;
+        }
+        h1, h2, h3, .font-cute {
+            font-family: 'Fredoka', cursive;
+        }
+        .blob-bg {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            transition: all 0.5s ease;
+        }
+        .card-cute {
+            border: 3px solid #4a5568;
+            box-shadow: 5px 5px 0px #4a5568;
+            border-radius: 2rem;
+        }
+        .btn-cute {
+            border: 2px solid #4a5568;
+            box-shadow: 3px 3px 0px #4a5568;
+            transition: all 0.1s ease;
+        }
+        .btn-cute:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #4a5568;
+        }
+        /* Floating animations */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .floating-icon {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-700 p-4 sm:p-6 md:p-8 flex flex-col items-center">
+
+    <!-- Notifikasi Box Kustom -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 bg-white border-3 border-gray-700 p-4 rounded-2xl shadow-[4px_4px_0px_#4a5568] flex items-center space-x-3">
+        <div id="toast-icon" class="text-2xl">🎉</div>
+        <div>
+            <h4 id="toast-title" class="font-cute text-base">Berhasil!</h4>
+            <p id="toast-msg" class="text-xs text-gray-600">Pesan notifikasi di sini.</p>
+        </div>
+    </div>
+
+    <!-- Header Aplikasi -->
+    <header class="text-center mb-8 max-w-2xl">
+        <div class="inline-block bg-white px-4 py-1 rounded-full border-2 border-gray-700 shadow-[2px_2px_0px_#4a5568] mb-3 text-sm font-bold text-emerald-600 floating-icon">
+            ✨ Bersih Itu Sehat & Menyenangkan! ✨
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-800 drop-shadow-sm mb-2">
+            Piket Ceria 🧹🌸
+        </h1>
+        <p class="text-sm sm:text-base font-semibold text-gray-700 bg-white/70 backdrop-blur-sm px-6 py-2 rounded-2xl border-2 border-gray-700 shadow-[3px_3px_0px_#4a5568] inline-block">
+            Aplikasi pengingat tugas piket harian paling imut & anti lupa!
+        </p>
+    </header>
+
+    <!-- Menu Navigasi Tab -->
+    <div class="flex space-x-3 mb-6">
+        <button onclick="switchTab('today')" id="btn-today" class="btn-cute px-5 py-2.5 rounded-xl font-cute bg-pastelGreen text-gray-800 text-sm sm:text-base font-bold flex items-center gap-2">
+            <i class="fa-solid fa-broom"></i> Hari Ini
+        </button>
+        <button onclick="switchTab('history')" id="btn-history" class="btn-cute px-5 py-2.5 rounded-xl font-cute bg-white text-gray-800 text-sm sm:text-base font-bold flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Piket
+        </button>
+        <button onclick="switchTab('manage')" id="btn-manage" class="btn-cute px-5 py-2.5 rounded-xl font-cute bg-white text-gray-800 text-sm sm:text-base font-bold flex items-center gap-2">
+            <i class="fa-solid fa-users-gear"></i> Atur Petugas
+        </button>
+    </div>
+
+    <!-- Konten Utama: TAB HARI INI -->
+    <main id="tab-today" class="w-full max-w-xl space-y-6">
+        <!-- Kotak Hari Ini -->
+        <div class="card-cute bg-white p-6 sm:p-8 relative overflow-hidden">
+            <!-- Dekorasi Ikon Latar -->
+            <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 pointer-events-none">
+                <i class="fa-solid fa-spray-can-sparkles"></i>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+                <span id="current-date-badge" class="bg-pastelYellow border-2 border-gray-700 px-3 py-1 rounded-full text-xs font-bold font-cute">
+                    📅 Senin, 26 Oktober 2026
+                </span>
+                <span class="text-xs bg-pastelPink border-2 border-gray-700 px-3 py-1 rounded-full font-bold font-cute animate-pulse">
+                    🔔 Waktunya Piket!
+                </span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 font-cute">
+                Petugas Piket Hari Ini 🌟
+            </h2>
+            <p class="text-xs sm:text-sm text-gray-600 mb-6">
+                Yuk, semangat bersihkan kelas/ruanganmu biar makin nyaman dipakai! Jangan lupa sapu & buang sampah ya. 😉
+            </p>
+
+            <!-- Daftar Petugas Hari Ini -->
+            <div id="today-crew-list" class="space-y-3 mb-6">
+                <!-- Data dirender dinamis via JS -->
+            </div>
+
+            <!-- Tombol Aksi Selesai -->
+            <button onclick="completeTodayPiket()" class="w-full py-3 bg-pastelGreen btn-cute font-cute text-lg font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-300">
+                <i class="fa-solid fa-circle-check"></i> Tandai Piket Hari Ini Selesai! ✨
+            </button>
+        </div>
+
+        <!-- Kartu Manfaat Singkat -->
+        <div class="card-cute bg-pastelBlue p-6">
+            <h3 class="font-cute text-lg font-bold mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-yellow-500"></i> Kenapa Harus Piket Tepat Waktu?
+            </h3>
+            <ul class="text-xs sm:text-sm space-y-2 font-medium">
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-600"></i> Ruangan bersih bikin pikiran jernih dan tenang.</li>
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-600"></i> Melatih rasa tanggung jawab dan kerja sama tim.</li>
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-600"></i> Terhindar dari denda atau teguran pengurus! 🤭</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Konten Utama: TAB RIWAYAT (HISTORY) -->
+    <main id="tab-history" class="w-full max-w-xl space-y-6 hidden">
+        <div class="card-cute bg-white p-6 sm:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 font-cute">
+                        Riwayat Piket 📜
+                    </h2>
+                    <p class="text-xs sm:text-sm text-gray-600">
+                        Rekam jejak kehadiran dan pelaksanaan tugas hari-hari sebelumnya.
+                    </p>
+                </div>
+                <button onclick="resetHistory()" class="btn-cute bg-pastelPink text-xs px-3 py-1.5 rounded-xl font-cute font-bold hover:bg-red-200">
+                    <i class="fa-solid fa-trash-can"></i> Hapus Riwayat
+                </button>
+            </div>
+
+            <!-- List Riwayat -->
+            <div id="history-list" class="space-y-4 max-h-[450px] overflow-y-auto pr-2">
+                <!-- Dirender dinamis via JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Konten Utama: TAB ATUR PETUGAS -->
+    <main id="tab-manage" class="w-full max-w-xl space-y-6 hidden">
+        <div class="card-cute bg-white p-6 sm:p-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 font-cute">
+                Jadwal Piket Mingguan 📋
+            </h2>
+            <p class="text-xs sm:text-sm text-gray-600 mb-6">
+                Daftar anggota kelompok piket berdasarkan hari kerja.
+            </p>
+
+            <div id="schedule-manage-list" class="space-y-4">
+                <!-- Dirender via JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Imut -->
+    <footer class="mt-10 text-center text-xs font-semibold text-gray-700 pb-4">
+        Dibuat dengan ❤️ untuk kebersihan bersama • Piket Ceria 2026
+    </footer>
+
+    <!-- Script Logika & Data -->
+    <script>
+        // Data Jadwal Piket Mingguan Default
+        let weeklySchedule = [
+            { day: "Senin", crew: ["Budi Santoso", "Siti Aminah", "Joko Widodo"] },
+            { day: "Selasa", crew: ["Dewi Lestari", "Rian Pratama", "Mega Putri"] },
+            { day: "Rabu", crew: ["Ahmad Fauzi", "Siti Rahma", "Doni Setiawan"] },
+            { day: "Kamis", crew: ["Putri Melati", "Bayuangga", "Indah Permata"] },
+            { day: "Jumat", crew: ["Eko Prasetyo", "Maya Anggraini", "Fajar Nugraha"] }
+        ];
+
+        // Data Riwayat (History) Piket Sebelumnya
+        let historyData = [
+            {
+                date: "Jumat, 23 Oktober 2026",
+                day: "Jumat",
+                crew: ["Eko Prasetyo", "Maya Anggraini", "Fajar Nugraha"],
+                status: "Selesai 🟢",
+                note: "Kebersihan sangat rapi dan bersih!"
+            },
+            {
+                date: "Kamis, 22 Oktober 2026",
+                day: "Kamis",
+                crew: ["Putri Melati", "Bayuangga", "Indah Permata"],
+                status: "Selesai 🟢",
+                note: "Piket tepat waktu sebelum bel masuk."
+            },
+            {
+                date: "Rabu, 21 Oktober 2026",
+                day: "Rabu",
+                crew: ["Ahmad Fauzi", "Siti Rahma", "Doni Setiawan"],
+                status: "Terlambat 🟡",
+                note: "Sempat ditegur karena piket agak siang."
+            },
+            {
+                date: "Selasa, 20 Oktober 2026",
+                day: "Selasa",
+                crew: ["Dewi Lestari", "Rian Pratama", "Mega Putri"],
+                status: "Selesai 🟢",
+                note: "Sangat rajin menyiram tanaman juga."
+            }
+        ];
+
+        // Mendapatkan hari ini secara otomatis (Simulasi atau Real)
+        // Untuk demo, kita tentukan index hari ini (misal 0 = Senin, atau ambil hari aktual)
+        function getTodayIndex() {
+            const d = new Date().getDay(); // 0 = Minggu, 1 = Senin, dst
+            // Jika Sabtu (6) atau Minggu (0), kita default ke Senin (0) atau tampilkan pesan libur
+            if (d === 0 || d === 6) return 0; // Default Senin untuk weekend
+            return d - 1; // 1(Senin) -> 0
+        }
+
+        let activeDayIndex = getTodayIndex();
+
+        // Inisialisasi Tampilan Saat Dimuat
+        window.onload = function() {
+            renderTodayView();
+            renderHistoryView();
+            renderManageView();
+            
+            // Set tanggal hari ini pada badge
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date-badge').innerHTML = `📅 ${new Date().toLocaleDateString('id-ID', options)}`;
+        };
+
+        // Fungsi Ganti Tab
+        function switchTab(tabName) {
+            const tabs = ['today', 'history', 'manage'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`btn-${t}`);
+                if (t === tabName) {
+                    el.classList.remove('hidden');
+                    btn.className = "btn-cute px-5 py-2.5 rounded-xl font-cute bg-pastelGreen text-gray-800 text-sm sm:text-base font-bold flex items-center gap-2";
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = "btn-cute px-5 py-2.5 rounded-xl font-cute bg-white text-gray-800 text-sm sm:text-base font-bold flex items-center gap-2";
+                }
+            });
+        }
+
+        // Render Tampilan Hari Ini
+        function renderTodayView() {
+            const container = document.getElementById('today-crew-list');
+            const todaySchedule = weeklySchedule[activeDayIndex];
+            
+            let html = `<div class="bg-pastelYellow/50 p-3 rounded-xl border-2 border-dashed border-gray-600 mb-3 text-center font-cute font-bold text-gray-700">
+                Jadwal Hari Ini: <span class="text-emerald-700">${todaySchedule.day}</span>
+            </div>`;
+
+            todaySchedule.crew.forEach((name, idx) => {
+                html += `
+                    <div class="flex items-center justify-between bg-pastelCream border-2 border-gray-700 p-3.5 rounded-2xl shadow-[2px_2px_0px_#4a5568]">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-pastelPink border-2 border-gray-700 flex items-center justify-center font-cute font-bold text-base">
+                                ${idx + 1}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-base">${name}</h4>
+                                <span class="text-xs text-gray-500 font-medium"><i class="fa-solid fa-broom text-emerald-500"></i> Petugas Piket Utama</span>
+                            </div>
+                        </div>
+                        <span class="bg-emerald-100 border-2 border-gray-700 px-3 py-1 rounded-xl text-xs font-bold font-cute text-emerald-800">
+                            Aktif 🌟
+                        </span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Render Riwayat Piket
+        function renderHistoryView() {
+            const container = document.getElementById('history-list');
+            if (historyData.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-6 font-medium">Belum ada riwayat tercatat.</p>`;
+                return;
+            }
+
+            let html = '';
+            historyData.forEach((item) => {
+                let badgeColor = item.status.includes('Selesai') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
+                let crewNames = item.crew.join(', ');
+                
+                html += `
+                    <div class="border-2 border-gray-700 bg-pastelCream p-4 rounded-2xl shadow-[3px_3px_0px_#4a5568] space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-cute font-bold text-sm text-gray-800"><i class="fa-regular fa-calendar-days text-emerald-600"></i> ${item.date}</span>
+                            <span class="border-2 border-gray-700 px-2.5 py-0.5 rounded-full text-xs font-bold font-cute ${badgeColor}">
+                                ${item.status}
+                            </span>
+                        </div>
+                        <div class="text-xs font-semibold text-gray-600">
+                            <i class="fa-solid fa-users text-purple-600"></i> Petugas: <span class="text-gray-800">${crewNames}</span>
+                        </div>
+                        <div class="text-xs bg-white border border-gray-400 p-2 rounded-xl text-gray-600 italic">
+                            💬 Catatan: "${item.note}"
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Render Pengaturan Jadwal
+        function renderManageView() {
+            const container = document.getElementById('schedule-manage-list');
+            let html = '';
+
+            weeklySchedule.forEach((item, index) => {
+                let isTodayTag = index === activeDayIndex ? `<span class="bg-pastelPink text-xs border border-gray-700 px-2 py-0.5 rounded-full font-cute font-bold">Hari Ini</span>` : '';
+                html += `
+                    <div class="border-2 border-gray-700 bg-pastelCream p-4 rounded-2xl shadow-[2px_2px_0px_#4a5568]">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-cute font-bold text-base text-gray-800 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-day text-emerald-600"></i> ${item.day}
+                            </h3>
+                            ${isTodayTag}
+                        </div>
+                        <div class="text-xs font-semibold text-gray-600 bg-white border border-gray-300 p-2.5 rounded-xl">
+                            ${item.crew.join(' • ')}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Tombol Selesaikan Piket Hari Ini (Menambah ke History)
+        function completeTodayPiket() {
+            const todaySchedule = weeklySchedule[activeDayIndex];
+            
+            // Cek apakah hari ini sudah dimasukkan ke history teratas agar tidak duplikat klik
+            const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Buat entri riwayat baru
+            const newHistoryItem = {
+                date: todayStr,
+                day: todaySchedule.day,
+                crew: todaySchedule.crew,
+                status: "Selesai 🟢",
+                note: "Piket harian diselesaikan dengan sangat bersih dan tuntas!"
+            };
+
+            historyData.unshift(newHistoryItem); // Tambah di awal array
+            renderHistoryView();
+            
+            showToast("Hore! Piket Selesai 🎉", "Tugas piket hari ini telah berhasil dicatat ke riwayat.");
+            switchTab('history');
+        }
+
+        // Hapus Riwayat
+        function resetHistory() {
+            historyData = [];
+            renderHistoryView();
+            showToast("Riwayat Dihapus 🗑️", "Semua data riwayat piket sebelumnya telah dibersihkan.");
+        }
+
+        // Fungsi Menampilkan Notifikasi Melayang Kustom (Pengganti alert())
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = message;
+            
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
